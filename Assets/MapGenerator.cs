@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization.Formatters;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
@@ -11,7 +13,7 @@ public class MapGenerator : MonoBehaviour
 
 
     List<GameObject> islands = new List<GameObject>();
-
+    int[] islandLayer;
     
     void Start()
     {
@@ -23,47 +25,109 @@ public class MapGenerator : MonoBehaviour
     {
         
     }
-
     void GenerateIsland()
     {
 
-        List<GameObject> edgeBlocks = new List<GameObject>();
-        List<GameObject> blocks = new List<GameObject>();
-
-        float spreadDecay = 1;
         //create an origin block for the rest of the blocks to spread in
-        GameObject originBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //GameObject originBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
         //slap it on a random place // placed on center for testing purposes. TODO: remove this comment after its solved
-        originBlock.transform.position = new Vector3(0, 0, 0);
+        //originBlock.transform.position = new Vector3(0, 0, 0);
+        FillIslandLayer();
 
-        //put it in a list.
-        blocks.Add(originBlock);
-        edgeBlocks.Add(originBlock);
-
-        //spawn other blocks surrounding itself. those blocks will then be added to the list. remove the block itself on the list right after
-        for (int i = 0; i < 4; i++)
+        
+    }
+    public List<Vector3> edgeBlocks = new List<Vector3>();
+    
+    void FillIslandLayer()
+    {
+        //int[,] islandLayerBlockPos = new int[Random.Range(4,50),Random.Range(4,50)];
+        List<Vector3> islandLayerBlockPos = new List<Vector3>();
+        
+        float spreadDecay = 2;
+        List<Vector3> blocks = new List<Vector3>();
+        while (spreadDecay >= 0)
         {
-            GameObject block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            block.transform.position = new Vector3();
+            if (edgeBlocks.Count == 0)
+            {
+                blocks.Add(Vector3.zero);
+            }
+            else
+            {
+                foreach (Vector3 block in edgeBlocks)
+                {
+                    /*blocks.Add(new Vector3(block.x + 1, block.y, block.z));
+                    blocks.Add(new Vector3(block.x - 1, block.y, block.z));
+                    blocks.Add(new Vector3(block.x, block.y, block.z + 1));
+                    blocks.Add(new Vector3(block.x, block.y, block.z - 1));*/
+                    
+                    for (int j = 0; j <= 3; j++)
+                    {
+                        for (int i = 0; i < edgeBlocks.Count; i++)
+                        {
+                            if (j == 0)
+                            {
+                                if (block.x + 1 != edgeBlocks[i].x)
+                                {
+                                    blocks.Add(new Vector3(block.x + 1, block.y, block.z));
+                                }
+                            }
+                            else if (j == 1)
+                            {
+                                if (block.z + 1 != edgeBlocks[i].z)
+                                {
+                                    blocks.Add(new Vector3(block.x, block.y, block.z + 1));
+                                }
+                            }
+                            else if (j == 2)
+                            {
+                                if (block.x - 1 != -edgeBlocks[i].x)
+                                {
+                                    blocks.Add(new Vector3(block.x - 1, block.y, block.z));
+                                }
+                            }
+                            else if (j == 3)
+                            {
+                                if (block.z - 1 != -edgeBlocks[i].z)
+                                {
+                                    blocks.Add(new Vector3(block.x, block.y, block.z - 1));
+                                }
+                            }
+                            else
+                            {
+                                return;
+                            }
+
+                            /*else if (block == edgeBlocks[i] && edgeBlocks.Count == 1)
+                            {
+                                blocks.Add(new Vector3(block.x + 1, block.y, block.z));
+                                blocks.Add(new Vector3(block.x - 1, block.y, block.z));
+                                blocks.Add(new Vector3(block.x, block.y, block.z + 1));
+                                blocks.Add(new Vector3(block.x, block.y, block.z - 1));
+                            }*/
+
+                        }
+                        
+                    }
+
+                }
+            }
+
+            edgeBlocks.AddRange(blocks);
+            blocks.Clear();
+            spreadDecay--;
+           
         }
-        
-        
-        /*block.transform.position = new Vector3(0, 0, 1);
-        block.transform.position = new Vector3(-1, 0, 0);
-        block.transform.position = new Vector3(0, 0, -1);*/
 
 
-        //the blocks that are now in the list will do the same to surround itself with blocks, checking other neighbor blocks in order not to duplicate to already taken positions.
-        //those blocks will then remove itself from the list after 
-        /*while (spreadDecay > 0)
+        foreach (Vector3 block in edgeBlocks)
         {
+            GameObject blockObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            blockObject.transform.position = block;
+        }
 
-        }*/
 
-        /*foreach (GameObject edgeBlock in edgeBlocks)
-        {
-            if (edgeBlock != blocks)
-        }*/
+        //determines the position of every block on the islands face/surface
+
 
     }
 
