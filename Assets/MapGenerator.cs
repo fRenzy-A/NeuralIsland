@@ -18,7 +18,8 @@ public class MapGenerator : MonoBehaviour
     
     void Start()
     {
-        //FillIslandLayer();
+
+        FillIslandLayer();
 
         Debug.Log("asdasda" + 2 + 3);
     }
@@ -39,47 +40,92 @@ public class MapGenerator : MonoBehaviour
 
         
     }
-    public List<GameObject> islandLayerBlocks = new List<GameObject>();
+    //public List<GameObject> islandLayerBlocks = new List<GameObject>();
 
-    public int islandLayerWidth = 15;
-    public int islandLayerHeight = 15;
-
-    void FillIslandLayer()
+    
+    public GameObject[,] layer;
+    public int asdasd;
+    private void FillIslandLayer()
     {
-        List<Vector3> layerPos = new List<Vector3>();
+        int islandLayerWidth = 15;
+        int islandLayerHeight = 15;
+    //GameObject blocks = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        
+        layer = new GameObject[islandLayerWidth, islandLayerHeight];
+        for (int i = 0; i < islandLayerWidth; i++)
+        {
+            for (int j = 0; j < islandLayerHeight; j++)
+            {
+                layer[i, j] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                layer[i, j].transform.position = new Vector3(i, 0, j);
+            }
+        }
+        GameObject centerBlock = layer[layer.GetLength(0) / 2, layer.GetLength(1) / 2];
+        int erosionLevel = 100 * layer.Length/2;
+        int currentErosionLevel = erosionLevel;
+
+        for (int i = 0; i < layer.GetLength(0); i++)
+        {
+            for (int j = 0; j < layer.GetLength(1); j++)
+            {                
+                if (Random.Range(0, currentErosionLevel+currentErosionLevel) <= Random.Range(0, currentErosionLevel))
+                {
+                    GameObject.Destroy(layer[i, j]);
+                }
+                else if (erosionLevel == 1)
+                {
+                    GameObject.Destroy(layer[i, j]);
+                }
+                //else return;
+                currentErosionLevel = (int)(erosionLevel / (centerBlock.transform.position.sqrMagnitude / layer[i,j].transform.position.sqrMagnitude));
+                if (erosionLevel <= 2)
+                {
+                    erosionLevel = 2;
+                }
+                asdasd = currentErosionLevel;
+            }
+        }
+
+
+
+        /*List<GameObject> layerPos = new List<GameObject>();
 
         for (int x = 0; x <= islandLayerWidth; x++)
         {
             for (int y = 0; y <= islandLayerHeight; y++)
             {
-                layerPos.Add(new Vector3(x,0,y));
+                layerPos.Add(new GameObject());
             }
         }
         GameObject originPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);//Vector3(islandLayerWidth/2,0,islandLayerHeight/2);
         originPoint.transform.position = new Vector3(islandLayerWidth / 2, 0, islandLayerHeight / 2);
-        islandLayerBlocks[1] = originPoint;
+       // islandLayerBlocks.Add(originPoint);
+        layerPos[layerPos.Count/2] = originPoint;
 
         
         
-        float spreadDecay = 0;
-        List<Vector3> blocks = new List<Vector3>();
+        float spreadDecay = 1;
+        List<GameObject> blocks = new List<GameObject>();
 
         while (spreadDecay >= 0)
         {
             int currentIslandBlockCount = islandLayerBlocks.Count;
-            //for each block in the island, if the block isnt sr
-            foreach (Vector3 pos in layerPos)
+            
+            foreach (GameObject block in layerPos)
             {
                 for (int i = 0; i < currentIslandBlockCount; i++)
                 {
-                    if (islandLayerBlocks[i].transform.position != pos)
+                    islandLayerBlocks[i]= block;
+
+                    if()
                     {
 
                     }
+                    //layerPos.Distinct().ToList();
                 }
             }
-               
-        }
+            spreadDecay--;
+        }*/
 
 
     }
