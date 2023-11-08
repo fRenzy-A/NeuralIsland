@@ -18,7 +18,9 @@ public class MapGenerator : MonoBehaviour
     
     void Start()
     {
-        GenerateIsland();
+        //FillIslandLayer();
+
+        Debug.Log("asdasda" + 2 + 3);
     }
 
     // Update is called once per frame
@@ -33,97 +35,51 @@ public class MapGenerator : MonoBehaviour
         //GameObject originBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
         //slap it on a random place // placed on center for testing purposes. TODO: remove this comment after its solved
         //originBlock.transform.position = new Vector3(0, 0, 0);
-        FillIslandLayer();
+        
 
         
     }
-    public List<Vector3> islandLayerBlockPos = new List<Vector3>();
+    public List<GameObject> islandLayerBlocks = new List<GameObject>();
+
+    public int islandLayerWidth = 15;
+    public int islandLayerHeight = 15;
 
     void FillIslandLayer()
     {
-        //int[,] islandLayerBlockPos = new int[Random.Range(4,50),Random.Range(4,50)];
+        List<Vector3> layerPos = new List<Vector3>();
 
+        for (int x = 0; x <= islandLayerWidth; x++)
+        {
+            for (int y = 0; y <= islandLayerHeight; y++)
+            {
+                layerPos.Add(new Vector3(x,0,y));
+            }
+        }
+        GameObject originPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);//Vector3(islandLayerWidth/2,0,islandLayerHeight/2);
+        originPoint.transform.position = new Vector3(islandLayerWidth / 2, 0, islandLayerHeight / 2);
+        islandLayerBlocks[1] = originPoint;
+
+        
         
         float spreadDecay = 0;
         List<Vector3> blocks = new List<Vector3>();
 
-        islandLayerBlockPos.Add(new Vector3(0,0,0));
-
         while (spreadDecay >= 0)
         {
-            List<Vector3> edgeBlocks = new List<Vector3>();
+            int currentIslandBlockCount = islandLayerBlocks.Count;
             //for each block in the island, if the block isnt sr
-            foreach (Vector3 block in islandLayerBlockPos)
+            foreach (Vector3 pos in layerPos)
             {
-                if (!islandLayerBlockPos.Contains(new Vector3(block.x + 1, block.y, block.z))
-                   || !islandLayerBlockPos.Contains(new Vector3(block.x - 1, block.y, block.z))
-                   || !islandLayerBlockPos.Contains(new Vector3(block.x, block.y, block.z + 1))
-                   || !islandLayerBlockPos.Contains(new Vector3(block.x, block.y, block.z - 1)))
+                for (int i = 0; i < currentIslandBlockCount; i++)
                 {
-                    edgeBlocks.Add(block);
-                }
-                else
-                {
-                    continue;
+                    if (islandLayerBlocks[i].transform.position != pos)
+                    {
+
+                    }
                 }
             }
-            foreach (Vector3 blockee in edgeBlocks)
-            {
-                /*blocks.Add(new Vector3(block.x + 1, block.y, block.z));
-                blocks.Add(new Vector3(block.x - 1, block.y, block.z));
-                blocks.Add(new Vector3(block.x, block.y, block.z + 1));
-                blocks.Add(new Vector3(block.x, block.y, block.z - 1));*/
-                if (!islandLayerBlockPos.Contains(new Vector3(blockee.x + 1, blockee.y, blockee.z)))
-                {
-                    blocks.Add(new Vector3(blockee.x + 1, blockee.y, blockee.z));
-                }
-                if (!islandLayerBlockPos.Contains(new Vector3(blockee.x - 1, blockee.y, blockee.z)))
-                {
-                    blocks.Add(new Vector3(blockee.x - 1, blockee.y, blockee.z));
-                }
-                if (!islandLayerBlockPos.Contains(new Vector3(blockee.x, blockee.y, blockee.z + 1)))
-                {
-                    blocks.Add(new Vector3(blockee.x, blockee.y, blockee.z + 1));
-                }
-                if (!islandLayerBlockPos.Contains(new Vector3(blockee.x, blockee.y, blockee.z - 1)))
-                {
-                    blocks.Add(new Vector3(blockee.x, blockee.y, blockee.z - 1));
-                }
-                /* if (block.x != islandLayerBlockPos[i].x + 1 && block.z == islandLayerBlockPos[i].z)
-                 {
-                     blocks.Add(new Vector3(block.x + 1, block.y, block.z));
-                 }
-                 if (block.x != islandLayerBlockPos[i].x - 1 && block.z == islandLayerBlockPos[i].z)
-                 {
-                     blocks.Add(new Vector3(block.x - 1, block.y, block.z));
-                 }
-                 if (block.z != islandLayerBlockPos[i].z + 1 && block.x == islandLayerBlockPos[i].x)
-                 {
-                     blocks.Add(new Vector3(block.x, block.y, block.z + 1));
-                 }
-                 if (block.z != islandLayerBlockPos[i].z - 1 && block.x == islandLayerBlockPos[i].x)
-                 {
-                     blocks.Add(new Vector3(block.x, block.y, block.z - 1));
-                 }*/
-            }
-
-            edgeBlocks.AddRange(blocks);
-            islandLayerBlockPos.AddRange(edgeBlocks);
-            blocks.Clear();
-            edgeBlocks.Clear(); 
-            spreadDecay--;
+               
         }
-
-
-        foreach (Vector3 blockees in islandLayerBlockPos)
-        {
-            GameObject blockObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            blockObject.transform.position = blockees;
-        }
-
-
-
-        //determines the position of every block on the islands face/surface
 
 
     }
