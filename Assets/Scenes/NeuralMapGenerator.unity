@@ -338,6 +338,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 575e56dd64beda84ca3f27add2eeecb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: []
+  thisLayerBlockPos: []
+  errodeMax: 10
+  errodeMin: 10
+  count: 1
+  nodupecount: 0
 --- !u!4 &1122626738
 Transform:
   m_ObjectHideFlags: 0

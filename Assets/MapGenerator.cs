@@ -7,21 +7,22 @@ using System.Runtime.Serialization.Formatters;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class MapGenerator : MonoBehaviour
 {
     // Start is called before the first frame update
 
 
-    List<GameObject> islands = new List<GameObject>();
-    int[] islandLayer;
+    public int howManyIslands = 1;
     
     void Start()
     {
-
-        FillIslandLayer();
-
-        Debug.Log("asdasda" + 2 + 3);
+        List<List<Vector3>> islands = new List<List<Vector3>>();
+        for (int i = 0; i < howManyIslands; i++)
+        {
+            GenerateIsland();
+        }
     }
 
     // Update is called once per frame
@@ -31,116 +32,73 @@ public class MapGenerator : MonoBehaviour
     }
     void GenerateIsland()
     {
-
-        //create an origin block for the rest of the blocks to spread in
-        //GameObject originBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //slap it on a random place // placed on center for testing purposes. TODO: remove this comment after its solved
-        //originBlock.transform.position = new Vector3(0, 0, 0);
-        
-
-        
+        int randomLayerCount = Random.Range(3, 10);
+        for (int i = 1; i < randomLayerCount; i++)
+        {
+            int randomMultiplier = (Random.Range(i + 5, (i+1) * 10))/i;
+            FillIslandLayer(i,randomMultiplier);
+        }
+           
     }
-    //public List<GameObject> islandLayerBlocks = new List<GameObject>();
 
-    
-    public GameObject[,] layer;
-    public int asdasd;
-    private void FillIslandLayer()
-    {
-        int islandLayerWidth = 15;
-        int islandLayerHeight = 15;
-    //GameObject blocks = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        
-        layer = new GameObject[islandLayerWidth, islandLayerHeight];
-        for (int i = 0; i < islandLayerWidth; i++)
+    public int count;
+    public int nodupecount;
+    private void FillIslandLayer(int layer,int randomMultiplier)
+    {       
+        int errosionRes = (100*randomMultiplier);
+        int errodeMax = (40*randomMultiplier);
+
+        List<Vector3> allBlockPos = new List<Vector3>();
+        List<Vector3> edgePos = new List<Vector3>();
+        List<Vector3> newCreatedPos = new List<Vector3>();
+       
+
+        edgePos.Add(new Vector3(0,-layer,0));
+
+        List<Vector3> noDupes;
+        while (errosionRes >= 0)
         {
-            for (int j = 0; j < islandLayerHeight; j++)
+            //IEnumerable<Vector3> noEdgeDupes = edgePos.Distinct().ToList();
+            foreach (Vector3 pos in edgePos)
             {
-                layer[i, j] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                layer[i, j].transform.position = new Vector3(i, 0, j);
+                if (Random.Range(0, errosionRes) > errodeMax)
+                {
+                    newCreatedPos.Add(new Vector3(pos.x + 1, pos.y, pos.z));
+                }
+                if (Random.Range(0, errosionRes) > errodeMax)
+                {
+                    newCreatedPos.Add(new Vector3(pos.x - 1, pos.y, pos.z));
+                }
+                if (Random.Range(0, errosionRes) > errodeMax)
+                {
+                    newCreatedPos.Add(new Vector3(pos.x, pos.y, pos.z + 1));
+                }
+                if (Random.Range(0, errosionRes) > errodeMax)
+                {
+                    newCreatedPos.Add(new Vector3(pos.x, pos.y, pos.z - 1));
+                }
             }
-        }
-        GameObject centerBlock = layer[layer.GetLength(0) / 2, layer.GetLength(1) / 2];
-        int erosionLevel = 100 * layer.Length/2;
-        int currentErosionLevel = erosionLevel;
 
-        for (int i = 0; i < layer.GetLength(0); i++)
-        {
-            for (int j = 0; j < layer.GetLength(1); j++)
-            {                
-                if (Random.Range(0, currentErosionLevel+currentErosionLevel) <= Random.Range(0, currentErosionLevel))
-                {
-                    GameObject.Destroy(layer[i, j]);
-                }
-                else if (erosionLevel == 1)
-                {
-                    GameObject.Destroy(layer[i, j]);
-                }
-                //else return;
-                currentErosionLevel = (int)(erosionLevel / (centerBlock.transform.position.sqrMagnitude / layer[i,j].transform.position.sqrMagnitude));
-                if (erosionLevel <= 2)
-                {
-                    erosionLevel = 2;
-                }
-                asdasd = currentErosionLevel;
-            }
+            edgePos.Clear();
+            edgePos.AddRange(newCreatedPos);
+            allBlockPos.AddRange(edgePos);
+            noDupes = allBlockPos.Distinct().ToList();
+            count = noDupes.Count;
+            newCreatedPos.Clear();
+            errosionRes -= (noDupes.Count);
         }
 
+        List<Vector3> noPosDupes = allBlockPos.Distinct().ToList(); 
+        nodupecount = noPosDupes.Count();
 
-
-        /*List<GameObject> layerPos = new List<GameObject>();
-
-        for (int x = 0; x <= islandLayerWidth; x++)
+        foreach (Vector3 pos in noPosDupes)
         {
-            for (int y = 0; y <= islandLayerHeight; y++)
-            {
-                layerPos.Add(new GameObject());
-            }
+            GameObject block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            block.transform.position = pos;
         }
-        GameObject originPoint = GameObject.CreatePrimitive(PrimitiveType.Cube);//Vector3(islandLayerWidth/2,0,islandLayerHeight/2);
-        originPoint.transform.position = new Vector3(islandLayerWidth / 2, 0, islandLayerHeight / 2);
-       // islandLayerBlocks.Add(originPoint);
-        layerPos[layerPos.Count/2] = originPoint;
-
-        
-        
-        float spreadDecay = 1;
-        List<GameObject> blocks = new List<GameObject>();
-
-        while (spreadDecay >= 0)
-        {
-            int currentIslandBlockCount = islandLayerBlocks.Count;
-            
-            foreach (GameObject block in layerPos)
-            {
-                for (int i = 0; i < currentIslandBlockCount; i++)
-                {
-                    islandLayerBlocks[i]= block;
-
-                    if()
-                    {
-
-                    }
-                    //layerPos.Distinct().ToList();
-                }
-            }
-            spreadDecay--;
-        }*/
-
-
     }
 
 
-    struct BlockCoord
-    {
-        public float blockX;
-        public float blockY;
 
-        public BlockCoord(float x, float y)
-        {
-            blockX = x;
-            blockY = y;
-        }
-    }
 
 }
